@@ -1,5 +1,6 @@
 package com.chat.api.infrastructure.controller;
 
+import com.chat.api.infrastructure.boxes.LoginBox;
 import com.chat.api.infrastructure.boxes.RegistrationBox;
 import com.chat.api.infrastructure.service.classes.UserService;
 import org.springframework.http.ResponseEntity;
@@ -23,4 +24,8 @@ public class AuthController {
         return userService.register(registrationBox);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginBox loginBox){
+        return userService.login(loginBox);
+    }
 }
