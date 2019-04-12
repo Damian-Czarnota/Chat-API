@@ -1,4 +1,4 @@
-package com.chat.api.infrastructure.boxes;
+package com.chat.api.infrastructure.boxes.messages;
 
 import com.chat.api.common.interfaces.PasswordMatches;
 import lombok.Data;
@@ -12,7 +12,7 @@ public class LoginBox {
 
     @NotNull
     @NotEmpty
-    private String login;
+    private String username;
 
     @NotNull
     @NotEmpty

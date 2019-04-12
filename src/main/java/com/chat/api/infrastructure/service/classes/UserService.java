@@ -1,16 +1,21 @@
 package com.chat.api.infrastructure.service.classes;
 
-import com.chat.api.infrastructure.boxes.LoginBox;
-import com.chat.api.infrastructure.boxes.RegistrationBox;
+import com.chat.api.infrastructure.boxes.messages.LoginBox;
+import com.chat.api.infrastructure.boxes.messages.RegistrationBox;
+import com.chat.api.infrastructure.boxes.responses.AuthenticationResponse;
 import com.chat.api.infrastructure.dao.UserRepository;
 import com.chat.api.infrastructure.enums.RoleName;
 import com.chat.api.infrastructure.model.Role;
 import com.chat.api.infrastructure.model.User;
 import com.chat.api.infrastructure.service.interfaces.IUserService;
+import com.chat.api.security.JWT.JwtProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,18 +27,20 @@ public class UserService implements IUserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationProvider authenticationProvider;
+    private final AuthenticationManager authenticationManager;
+    private final JwtProvider jwtProvider;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationProvider authenticationProvider){
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtProvider jwtProvider){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.authenticationProvider = authenticationProvider;
+        this.authenticationManager = authenticationManager;
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
     public ResponseEntity<?> register(RegistrationBox registrationBox) {
 
-        if(userRepository.existsByLogin(registrationBox.getLogin()))
+        if(userRepository.existsByUsername(registrationBox.getUsername()))
             return new ResponseEntity<>("Username is already taken", HttpStatus.BAD_REQUEST);
 
         if(userRepository.existsByEmail(registrationBox.getEmail()))
@@ -42,9 +49,9 @@ public class UserService implements IUserService {
         Set<Role> roleSet = new HashSet<>();
         roleSet.add(new Role(RoleName.ROLE_USER));
 
-        User user = User.builder().login(registrationBox.getLogin())
+        User user = User.builder().username(registrationBox.getUsername())
                 .email(registrationBox.getEmail())
-                .name(registrationBox.getName())
+                .name(registrationBox.getUsername())
                 .password(passwordEncoder.encode(registrationBox.getPassword()))
                 .roles(roleSet)
                 .build();
@@ -56,13 +63,14 @@ public class UserService implements IUserService {
 
     @Override
     public ResponseEntity<?> login(LoginBox loginBox) {
-        User user = userRepository.findByLogin(loginBox.getLogin())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginBox.getUsername(), loginBox.getPassword()));
 
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        if(passwordEncoder.matches(loginBox.getPassword(), user.getPassword()))
-            return new ResponseEntity<>(HttpStatus.OK);
-        else
-            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+        String jwt = jwtProvider.generateJwtToken(authentication);
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        return ResponseEntity.ok(new AuthenticationResponse(jwt, userDetails.getAuthorities()));
     }
 }

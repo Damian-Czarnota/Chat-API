@@ -1,7 +1,7 @@
 package com.chat.api.common.classes;
 
 import com.chat.api.common.interfaces.PasswordMatches;
-import com.chat.api.infrastructure.boxes.RegistrationBox;
+import com.chat.api.infrastructure.boxes.messages.RegistrationBox;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

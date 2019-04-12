@@ -1,8 +1,11 @@
 package com.chat.api.security;
 
+import com.chat.api.infrastructure.service.classes.UserDetailsServiceImpl;
+import com.chat.api.security.JWT.JwtAuthTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -22,8 +25,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class WebConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserDetailsServiceImpl userDetailsService;
 
+
+    @Bean
+    public JwtAuthTokenFilter authenticationJwtTokenFilter() {
+        return new JwtAuthTokenFilter();
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -35,9 +43,12 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
+
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) {
-        auth.authenticationProvider(authProvider());
+    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+        authenticationManagerBuilder
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder());
     }
 
     @Bean
@@ -51,6 +62,12 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
         authProvider.setPasswordEncoder(passwordEncoder());
         authProvider.setUserDetailsService(userDetailsService);
         return authProvider;
+    }
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 
     @Bean

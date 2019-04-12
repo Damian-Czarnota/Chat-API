@@ -1,7 +1,7 @@
 package com.chat.api.infrastructure.controller;
 
-import com.chat.api.infrastructure.boxes.LoginBox;
-import com.chat.api.infrastructure.boxes.RegistrationBox;
+import com.chat.api.infrastructure.boxes.messages.LoginBox;
+import com.chat.api.infrastructure.boxes.messages.RegistrationBox;
 import com.chat.api.infrastructure.service.classes.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

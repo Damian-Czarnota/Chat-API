@@ -1,4 +1,4 @@
-package com.chat.api.infrastructure.boxes;
+package com.chat.api.infrastructure.boxes.messages;
 
 import com.chat.api.common.interfaces.PasswordMatches;
 import com.chat.api.common.interfaces.ValidEmail;
@@ -13,7 +13,7 @@ public class RegistrationBox {
 
     @NotNull
     @NotEmpty
-    private String login;
+    private String username;
 
     @NotNull
     @NotEmpty

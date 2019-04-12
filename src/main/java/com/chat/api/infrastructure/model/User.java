@@ -24,7 +24,7 @@ public class User {
     @Size(max = 60)
     private String password;
     private String email;
-    private String login;
+    private String username;
 
     @ManyToMany(cascade = CascadeType.ALL)
     private Set<Role> roles;
