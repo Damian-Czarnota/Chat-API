@@ -25,6 +25,7 @@ public class User {
     private String password;
     private String email;
     private String username;
+    private byte[] profileImage;
 
     @ManyToMany(cascade = CascadeType.ALL)
     private Set<Role> roles;
