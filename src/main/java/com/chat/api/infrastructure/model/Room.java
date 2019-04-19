@@ -15,7 +15,7 @@ public class Room {
     private Long ID;
     private String name;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<User> users;
     private String socketUrl;
 
