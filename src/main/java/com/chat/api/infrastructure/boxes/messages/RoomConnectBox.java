@@ -6,10 +6,10 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class RoomBox {
+public class RoomConnectBox {
 
     @NotNull
     @NotEmpty
-    private String name;
+    private Long id;
 
 }

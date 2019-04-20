@@ -1,7 +1,7 @@
 package com.chat.api.infrastructure.service;
 
 import com.chat.api.infrastructure.dao.UserRepository;
-import com.chat.api.infrastructure.exceptions.FileStorageException;
+import com.chat.api.infrastructure.exceptions.DefaultException;
 import com.chat.api.infrastructure.model.User;
 import com.chat.api.security.SecurityUtils;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class LoggedUserService {
             user.setProfileImage(bytes);
             userRepository.save(user);
         } catch (IOException e){
-            throw new FileStorageException("Could not store file " + file.getName() + ". Please try again!", e);
+            throw new DefaultException("Could not store file " + file.getName() + ". Please try again!", e);
         }
         return user;
     }
