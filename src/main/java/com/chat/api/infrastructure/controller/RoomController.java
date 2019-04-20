@@ -2,6 +2,7 @@ package com.chat.api.infrastructure.controller;
 
 import com.chat.api.infrastructure.boxes.messages.RoomBox;
 import com.chat.api.infrastructure.boxes.messages.RoomConnectBox;
+import com.chat.api.infrastructure.boxes.responses.ResponseRoomUsers;
 import com.chat.api.infrastructure.boxes.responses.ResponseRooms;
 import com.chat.api.infrastructure.service.classes.RoomService;
 import org.springframework.http.HttpStatus;
@@ -41,5 +42,10 @@ public class RoomController {
     public ResponseEntity<?> disconnect() {
         roomService.disconnect();
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{id}/users")
+    public ResponseEntity<ResponseRoomUsers> getUsers(@PathVariable("id") Long ID) {
+        return new ResponseEntity<ResponseRoomUsers>(roomService.getUsers(ID),HttpStatus.OK);
     }
 }

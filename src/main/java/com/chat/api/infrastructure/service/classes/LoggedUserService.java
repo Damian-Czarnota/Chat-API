@@ -1,4 +1,4 @@
-package com.chat.api.infrastructure.service;
+package com.chat.api.infrastructure.service.classes;
 
 import com.chat.api.infrastructure.dao.UserRepository;
 import com.chat.api.infrastructure.exceptions.DefaultException;

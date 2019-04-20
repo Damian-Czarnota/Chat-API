@@ -1,7 +1,7 @@
 package com.chat.api.infrastructure.controller;
 
 import com.chat.api.infrastructure.dto.UserDto;
-import com.chat.api.infrastructure.service.LoggedUserService;
+import com.chat.api.infrastructure.service.classes.LoggedUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

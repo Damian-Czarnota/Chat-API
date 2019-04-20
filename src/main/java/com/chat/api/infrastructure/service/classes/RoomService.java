@@ -1,9 +1,11 @@
 package com.chat.api.infrastructure.service.classes;
 
 import com.chat.api.infrastructure.boxes.messages.RoomBox;
+import com.chat.api.infrastructure.boxes.responses.ResponseRoomUsers;
 import com.chat.api.infrastructure.boxes.responses.ResponseRooms;
 import com.chat.api.infrastructure.dao.RoomRepository;
 import com.chat.api.infrastructure.dto.RoomDto;
+import com.chat.api.infrastructure.dto.UserDto;
 import com.chat.api.infrastructure.exceptions.DefaultException;
 import com.chat.api.infrastructure.model.Room;
 import com.chat.api.security.SecurityUtils;
@@ -40,6 +42,7 @@ public class RoomService {
         room.addUser(SecurityUtils.getCurrentUser());
         roomRepository.save(room);
         messagingTemplate.convertAndSend("/topic/rooms", getAll());
+        messagingTemplate.convertAndSend("/topic/room/"+id+"/users", getUsers(id));
     }
 
     public void disconnect() {
@@ -47,5 +50,12 @@ public class RoomService {
         room.removeUser(SecurityUtils.getCurrentUser().getID());
         roomRepository.save(room);
         messagingTemplate.convertAndSend("/topic/rooms", getAll());
+        messagingTemplate.convertAndSend("/topic/room/"+room.getID()+"/users", getUsers(room.getID()));
+    }
+
+    public ResponseRoomUsers getUsers(Long ID) {
+        Room room = roomRepository.findById(ID).orElseThrow(() -> new DefaultException("Room with this id doesn't exist!"));
+        List<UserDto> collect = room.getUsers().stream().map(user -> new UserDto(user)).collect(Collectors.toList());
+        return new ResponseRoomUsers(collect);
     }
 }
