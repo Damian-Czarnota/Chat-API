@@ -5,6 +5,7 @@ import com.chat.api.infrastructure.boxes.messages.RegistrationBox;
 import com.chat.api.infrastructure.boxes.responses.AuthenticationResponse;
 import com.chat.api.infrastructure.dao.UserRepository;
 import com.chat.api.infrastructure.enums.RoleName;
+import com.chat.api.infrastructure.exceptions.CustomError;
 import com.chat.api.infrastructure.model.Role;
 import com.chat.api.infrastructure.model.User;
 import com.chat.api.infrastructure.service.interfaces.IUserService;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -63,8 +65,16 @@ public class UserService implements IUserService {
 
     @Override
     public ResponseEntity<?> login(LoginBox loginBox) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginBox.getUsername(), loginBox.getPassword()));
+        Authentication authentication;
+
+        try{
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginBox.getUsername(), loginBox.getPassword()));
+        }
+        catch(AuthenticationException e){
+            return new ResponseEntity(
+                    new CustomError(1, "Bad credentials"), null, HttpStatus.UNAUTHORIZED);
+        }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
