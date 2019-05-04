@@ -43,10 +43,10 @@ public class UserService implements IUserService {
     public ResponseEntity<?> register(RegistrationBox registrationBox) {
 
         if(userRepository.existsByUsername(registrationBox.getUsername()))
-            return new ResponseEntity<>("Username is already taken", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new CustomError(2, "Username is taken"), HttpStatus.BAD_REQUEST);
 
         if(userRepository.existsByEmail(registrationBox.getEmail()))
-            return new ResponseEntity<>("Email is in use", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new CustomError(3, "Email is in use"), HttpStatus.BAD_REQUEST);
 
         Set<Role> roleSet = new HashSet<>();
         roleSet.add(new Role(RoleName.ROLE_USER));
