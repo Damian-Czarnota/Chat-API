@@ -47,10 +47,6 @@ public class MessageService implements IMessageService {
         return messages
                 .stream()
                 .map(message -> new MessageDto(message))
-                .map(messageDto -> {
-                    messageDto.setIsMine(messageDto.getAuthor().getID().equals(SecurityUtils.getCurrentUser().getID()));
-                    return messageDto;
-                })
                 .collect(Collectors.toList());
     }
 }

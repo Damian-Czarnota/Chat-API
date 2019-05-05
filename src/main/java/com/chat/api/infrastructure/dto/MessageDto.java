@@ -12,7 +12,6 @@ public class MessageDto {
     private Date date;
     private String content;
     private Long roomId;
-    private Boolean isMine;
 
     public MessageDto(Message message) {
         this.author = new UserDto(message.getAuthor());
