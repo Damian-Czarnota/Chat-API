@@ -12,6 +12,7 @@ import com.chat.api.infrastructure.service.interfaces.IUserService;
 import com.chat.api.security.JWT.JwtProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,12 +33,15 @@ public class UserService implements IUserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
+    private final EmailServiceImpl emailService;
+    private SimpleMailMessage template;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtProvider jwtProvider){
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtProvider jwtProvider, EmailServiceImpl emailService){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtProvider = jwtProvider;
+        this.emailService = emailService;
     }
 
     @Override
@@ -60,6 +65,15 @@ public class UserService implements IUserService {
 
         userRepository.save(user);
 
+        Context context = new Context();
+        context.setVariable("header", "Thank you for registration!");
+        context.setVariable("title", "Thank you for registration!");
+        context.setVariable("description", "Thank you for your registration! :)");
+
+        emailService.sendEmail(user.getEmail(),
+                "Thank you for registration!",
+                context
+                );
         return new ResponseEntity<>("User registered successfully!", HttpStatus.OK);
     }
 
