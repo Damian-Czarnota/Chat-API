@@ -1,5 +1,6 @@
 package com.chat.api.infrastructure.controller;
 
+import com.chat.api.infrastructure.boxes.messages.ChangePasswordBox;
 import com.chat.api.infrastructure.dto.UserDto;
 import com.chat.api.infrastructure.service.classes.LoggedUserService;
 import org.springframework.http.HttpStatus;
@@ -25,5 +26,9 @@ public class LoggedUserController {
     @PostMapping()
     public ResponseEntity<UserDto> addAvatar(@RequestParam("file") MultipartFile file) {
         return new ResponseEntity<UserDto>(new UserDto(loggedUserService.addAvatar(file)), HttpStatus.OK);
+    }
+    @PutMapping()
+    public ResponseEntity<?> put(@RequestBody ChangePasswordBox form) {
+        return loggedUserService.changePassword(form);
     }
 }
