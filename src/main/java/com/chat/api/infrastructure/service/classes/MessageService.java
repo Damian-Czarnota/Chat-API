@@ -40,7 +40,7 @@ public class MessageService implements IMessageService {
     public void createMessage(String roomId, MessageBox messageBox) {
         Message message = new Message(SecurityUtils.getCurrentUser(), messageBox.getContent(), Long.parseLong(roomId));
         messagesRepository.save(message);
-        messagingTemplate.convertAndSend("/topic/messages/"+roomId, getAll());
+        messagingTemplate.convertAndSend("/topic/messages/"+roomId, getRoomMessages(Long.parseLong(roomId)));
     }
 
     private List<MessageDto> markMessages(List<Message> messages) {
